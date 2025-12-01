@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso - Varejão</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos extras só para o login/cadastro */
+        .switch-btn {
+            background: none;
+            border: none;
+            color: #28a745;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="max-width: 400px; text-align: center;">
+        <h2>Varejão On-line 🍎</h2>
+
+        <div id="login-box">
+            <h3>Entrar</h3>
+            <input type="email" id="login-email" placeholder="Seu E-mail">
+            <input type="password" id="login-pass" placeholder="Sua Senha">
+            <button onclick="fazerLogin()">Acessar Sistema</button>
+            
+            <p>Não tem conta? <button class="switch-btn" onclick="toggleForms()">Cadastre-se aqui</button></p>
+        </div>
+
+        <div id="register-box" class="hidden">
+            <h3>Criar Nova Conta</h3>
+            <input type="text" id="reg-name" placeholder="Seu Nome Completo">
+            <input type="email" id="reg-email" placeholder="Seu E-mail">
+            <input type="password" id="reg-pass" placeholder="Crie uma Senha">
+            <button onclick="fazerCadastro()">Cadastrar</button>
+
+            <p>Já tem conta? <button class="switch-btn" onclick="toggleForms()">Fazer Login</button></p>
+        </div>
+    </div>
+
+    <script>
+        // Define a URL da API (use a do Render quando subir, ou localhost para teste)
+        const API_URL = 'http://localhost:3000'; 
+
+        // Função para trocar entre Login e Cadastro
+        function toggleForms() {
+            const loginBox = document.getElementById('login-box');
+            const regBox = document.getElementById('register-box');
+            
+            if (loginBox.style.display === 'none') {
+                loginBox.style.display = 'block';
+                regBox.style.display = 'none';
+            } else {
+                loginBox.style.display = 'none';
+                regBox.style.display = 'block';
+            }
+        }
+
+        // Função de Login (Já existia)
+        async function fazerLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-pass').value;
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Salva o nome do usuário para usar depois se quiser
+                    localStorage.setItem('usuario', data.user.name);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                alert('Erro ao conectar com o servidor.');
+            }
+        }
+
+        // Função de Cadastro (Nova!)
+        async function fazerCadastro() {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-pass').value;
+
+            if (!name || !email || !password) {
+                return alert('Preencha todos os campos!');
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Conta criada com sucesso! Agora faça login.');
+                    toggleForms(); // Volta para a tela de login
+                } else {
+                    alert(data.message || 'Erro ao cadastrar.');
+                }
+            } catch (error) {
+                alert('Erro ao conectar com o servidor.');
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>

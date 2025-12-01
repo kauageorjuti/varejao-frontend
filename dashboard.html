@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Varejão Dashboard</title></head>
+<body>
+    <h1>Produtos</h1>
+    <a href="cadastro.html">Cadastrar Novo</a>
+    <ul id="lista"></ul>
+
+    <script>
+        async function carregar() {
+            const res = await fetch('http://localhost:3000/products');
+            const produtos = await res.json();
+            const lista = document.getElementById('lista');
+            lista.innerHTML = '';
+            produtos.forEach(p => {
+                lista.innerHTML += `<li>${p.name} - R$ ${p.price} <button onclick="deletar('${p.id}')">X</button></li>`;
+            });
+        }
+        
+        async function deletar(id) {
+            await fetch(`http://localhost:3000/products/${id}`, { method: 'DELETE' });
+            carregar();
+        }
+        carregar();
+    </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>Novo Produto</h1>
+    <input id="nome" placeholder="Nome">
+    <input id="preco" placeholder="Preço">
+    <button onclick="salvar()">Salvar</button>
+
+    <script>
+        async function salvar() {
+            const name = document.getElementById('nome').value;
+            const price = document.getElementById('preco').value;
+            
+            await fetch('http://localhost:3000/products', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name, price, quantity: 10})
+            });
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
