@@ -1,27 +1,171 @@
 <!DOCTYPE html>
-<html>
-<head><title>Varejão Dashboard</title></head>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Varejão Premium</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
-    <h1>Produtos</h1>
-    <a href="cadastro.html">Cadastrar Novo</a>
-    <ul id="lista"></ul>
+    <header>
+        <h1>Varejão <span>Online</span></h1>
+        <div class="user-info">
+            <span id="user-name">Carregando...</span>
+            <button class="logout-btn" onclick="logout()">Sair</button>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div id="cliente-view" style="display: none;">
+            <h2>🔥 Ofertas da Semana</h2>
+            <div class="grid" id="products-grid">
+                </div>
+        </div>
+
+        <div id="admin-view" style="display: none;">
+            <h2>👑 Painel Administrativo</h2>
+            <div class="admin-panel">
+                <h3>Pedidos Recebidos</h3>
+                <table id="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Itens</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="cart-float" class="cart-float" onclick="finalizarCompra()">
+        🛒 Finalizar Compra (<span id="cart-count">0</span> itens)
+    </div>
 
     <script>
-        async function carregar() {
-            const res = await fetch('http://localhost:3000/products');
-            const produtos = await res.json();
-            const lista = document.getElementById('lista');
-            lista.innerHTML = '';
-            produtos.forEach(p => {
-                lista.innerHTML += `<li>${p.name} - R$ ${p.price} <button onclick="deletar('${p.id}')">X</button></li>`;
-            });
-        }
+        // --- CONFIGURAÇÃO ---
+        // Se já fez deploy, use a URL do Render. Se está testando local, use localhost:3000
+        const API_URL = 'https://varejao-backend-shpn.onrender.com'; 
         
-        async function deletar(id) {
-            await fetch(`http://localhost:3000/products/${id}`, { method: 'DELETE' });
-            carregar();
+        const userEmail = localStorage.getItem('userEmail');
+        const userName = localStorage.getItem('usuario') || 'Visitante';
+        let carrinho = [];
+
+        // --- INICIALIZAÇÃO ---
+        document.getElementById('user-name').innerText = `Olá, ${userName}`;
+
+        // Verifica quem é o usuário
+        if (userEmail === 'admin@teste.com') {
+            document.getElementById('admin-view').style.display = 'block';
+            carregarPedidosAdmin();
+        } else {
+            document.getElementById('cliente-view').style.display = 'block';
+            carregarProdutosLoja();
         }
-        carregar();
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // --- LÓGICA DO CLIENTE ---
+        async function carregarProdutosLoja() {
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                const produtos = await res.json();
+                const grid = document.getElementById('products-grid');
+                
+                grid.innerHTML = produtos.map(p => `
+                    <div class="card">
+                        <img src="${p.image_url || 'https://via.placeholder.com/300'}" alt="${p.name}">
+                        <div class="card-body">
+                            <div class="card-title">${p.name}</div>
+                            <div class="card-price">R$ ${p.price}</div>
+                            <button onclick="adicionarAoCarrinho('${p.name}', ${p.price})">
+                                Adicionar à Cesta ➕
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { console.error("Erro ao carregar produtos"); }
+        }
+
+        function adicionarAoCarrinho(nome, preco) {
+            carrinho.push({ nome, preco });
+            atualizarCarrinhoUI();
+            alert(`${nome} adicionado!`);
+        }
+
+        function atualizarCarrinhoUI() {
+            const float = document.getElementById('cart-float');
+            const count = document.getElementById('cart-count');
+            count.innerText = carrinho.length;
+            if (carrinho.length > 0) float.style.display = 'block';
+        }
+
+        async function finalizarCompra() {
+            if (carrinho.length === 0) return;
+            
+            const total = carrinho.reduce((acc, item) => acc + item.preco, 0);
+            const confirmar = confirm(`Total: R$ ${total.toFixed(2)}\nDeseja confirmar a compra?`);
+
+            if (confirmar) {
+                await fetch(`${API_URL}/checkout`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        user_email: userEmail,
+                        total_price: total,
+                        items: carrinho
+                    })
+                });
+                alert('Compra realizada com sucesso! 🎉');
+                carrinho = [];
+                location.reload();
+            }
+        }
+
+        // --- LÓGICA DO ADMIN ---
+        async function carregarPedidosAdmin() {
+            const res = await fetch(`${API_URL}/orders`);
+            const pedidos = await res.json();
+            const tbody = document.querySelector('#orders-table tbody');
+
+            tbody.innerHTML = pedidos.map(pedido => {
+                // Formata os itens para exibir bonito
+                const listaItens = pedido.items.map(i => i.nome).join(', ');
+                const classeStatus = pedido.status === 'Pendente' ? 'status-pendente' : 'status-enviado';
+                const botaoAcao = pedido.status === 'Pendente' 
+                    ? `<button onclick="enviarPedido('${pedido.id}')" style="background:#3498db; width:auto; padding:5px 10px;">Despachar 🚚</button>` 
+                    : '✅ Concluído';
+
+                return `
+                    <tr>
+                        <td>${new Date(pedido.created_at).toLocaleDateString()}</td>
+                        <td>${pedido.user_email}</td>
+                        <td style="font-size:0.9em; color:#555;">${listaItens}</td>
+                        <td>R$ ${pedido.total_price}</td>
+                        <td class="${classeStatus}">${pedido.status}</td>
+                        <td>${botaoAcao}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function enviarPedido(id) {
+            if(confirm('Marcar este pedido como Enviado?')) {
+                await fetch(`${API_URL}/orders/${id}`, { method: 'PUT' });
+                carregarPedidosAdmin(); // Recarrega a tabela
+            }
+        }
     </script>
 </body>
 </html>
