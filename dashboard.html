@@ -1,124 +1,412 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
+<parameter name="head">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Varejão Premium</title>
+    <title>Dashboard - Varejão Online</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <h1>Varejão <span>Online</span></h1>
+        <h1>
+            <i class="fas fa-shopping-basket"></i>
+            Varejão <span>Online</span>
+        </h1>
         <div class="user-info">
-            <span id="user-name">Carregando...</span>
-            <button class="logout-btn" onclick="logout()">Sair</button>
+            <span id="user-name"><i class="fas fa-user"></i> Carregando...</span>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
         </div>
     </header>
 
-    <div class="container">
-        
+    <div class="dashboard-container">
+        <!-- VISÃO DO CLIENTE -->
         <div id="cliente-view" style="display: none;">
-            <h2>🔥 Ofertas da Semana</h2>
-            <div class="grid" id="products-grid">
-                </div>
-        </div>
+            <div class="page-header">
+                <h2><i class="fas fa-fire"></i> Ofertas da Semana</h2>
+            </div>
 
-        <div id="admin-view" style="display: none;">
-            <h2>👑 Painel Administrativo</h2>
+            <div class="search-filter-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Buscar produtos..." onkeyup="filtrarProdutos()">
+                </div>
+                <select class="filter-select" id="filter-select" onchange="filtrarProdutos()">
+                    <option value="all">Todos os Produtos</option>
+                    <option value="frutas">Frutas</option>
+                    <option value="verduras">Verduras</option>
+                    <option value="legumes">Legumes</option>
+                </select>
+            </div>
+
+            <div class="products-grid" id="products-grid"></div>
+
+            <!-- Tabs de Navegação -->
             <div class="admin-panel">
-                <h3>Pedidos Recebidos</h3>
-                <table id="orders-table">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Cliente</th>
-                            <th>Itens</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
+                <h3><i class="fas fa-history"></i> Meus Pedidos</h3>
+                <div class="table-container">
+                    <table id="my-orders-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Itens</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
+        <!-- VISÃO DO ADMIN -->
+        <div id="admin-view" style="display: none;">
+            <div class="page-header">
+                <h2><i class="fas fa-crown"></i> Painel Administrativo</h2>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total de Pedidos</h3>
+                        <p id="stat-orders">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon accent">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Receita Total</h3>
+                        <p id="stat-revenue">R$ 0,00</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon secondary">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Produtos Cadastrados</h3>
+                        <p id="stat-products">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gerenciamento de Produtos -->
+            <div class="admin-panel">
+                <h3><i class="fas fa-boxes"></i> Gerenciar Produtos</h3>
+                <button class="btn-add-product" onclick="showAddProductModal()">
+                    <i class="fas fa-plus"></i> Adicionar Produto
+                </button>
+                <div class="table-container">
+                    <table id="products-admin-table">
+                        <thead>
+                            <tr>
+                                <th>Imagem</th>
+                                <th>Nome</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pedidos Recebidos -->
+            <div class="admin-panel">
+                <h3><i class="fas fa-clipboard-list"></i> Pedidos Recebidos</h3>
+                <div class="search-filter-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="order-search" placeholder="Buscar por cliente..." onkeyup="filtrarPedidos()">
+                    </div>
+                    <select class="filter-select" id="order-filter" onchange="filtrarPedidos()">
+                        <option value="all">Todos os Status</option>
+                        <option value="Pendente">Pendentes</option>
+                        <option value="Enviado">Enviados</option>
+                    </select>
+                </div>
+                <div class="table-container">
+                    <table id="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Itens</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="cart-float" class="cart-float" onclick="finalizarCompra()">
-        🛒 Finalizar Compra (<span id="cart-count">0</span> itens)
+    <!-- Carrinho Flutuante -->
+    <div id="cart-float" class="cart-float" onclick="showCartModal()">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Carrinho (<span id="cart-count">0</span>)</span>
     </div>
+
+    <!-- Modal do Carrinho -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" onclick="closeCartModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <i class="fas fa-shopping-cart modal-icon"></i>
+                <h2>Meu Carrinho</h2>
+            </div>
+            <div id="cart-items" style="max-height: 400px; overflow-y: auto; margin-bottom: 20px;">
+                <!-- Itens do carrinho serão inseridos aqui -->
+            </div>
+            <div style="border-top: 2px solid var(--light); padding-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>Total:</h3>
+                    <h2 id="cart-total" style="color: var(--accent);">R$ 0,00</h2>
+                </div>
+                <button class="btn-submit" onclick="finalizarCompra()">
+                    <i class="fas fa-check"></i> Finalizar Compra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Adicionar/Editar Produto -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeProductModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <i class="fas fa-box modal-icon"></i>
+                <h2 id="product-modal-title">Adicionar Produto</h2>
+            </div>
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label for="product-name">
+                        <i class="fas fa-tag"></i> Nome do Produto
+                    </label>
+                    <input type="text" id="product-name" placeholder="Ex: Maçã Fuji" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-price">
+                        <i class="fas fa-dollar-sign"></i> Preço (R$)
+                    </label>
+                    <input type="number" id="product-price" placeholder="0.00" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-quantity">
+                        <i class="fas fa-boxes"></i> Quantidade em Estoque
+                    </label>
+                    <input type="number" id="product-quantity" placeholder="0" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-image">
+                        <i class="fas fa-image"></i> URL da Imagem
+                    </label>
+                    <input type="url" id="product-image" placeholder="https://exemplo.com/imagem.jpg" required>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Salvar Produto
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
 
     <script>
-        // --- CONFIGURAÇÃO ---
-        // Se já fez deploy, use a URL do Render. Se está testando local, use localhost:3000
-        const API_URL = 'https://varejao-backend-shpn.onrender.com'; 
-        
+        const API_URL = 'https://varejao-backend-shpn.onrender.com';
         const userEmail = localStorage.getItem('userEmail');
         const userName = localStorage.getItem('usuario') || 'Visitante';
-        let carrinho = [];
+        let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+        let todosProdutos = [];
+        let todosPedidos = [];
 
-        // --- INICIALIZAÇÃO ---
-        document.getElementById('user-name').innerText = `Olá, ${userName}`;
+        // Inicialização
+        document.getElementById('user-name').innerText = `${userName}`;
+        atualizarCarrinhoUI();
 
-        // Verifica quem é o usuário
         if (userEmail === 'admin@teste.com') {
             document.getElementById('admin-view').style.display = 'block';
-            carregarPedidosAdmin();
+            carregarDashboardAdmin();
         } else {
             document.getElementById('cliente-view').style.display = 'block';
             carregarProdutosLoja();
+            carregarMeusPedidos();
         }
 
         function logout() {
             localStorage.clear();
-            window.location.href = 'index.html';
+            showToast('Logout realizado com sucesso!', 'success');
+            setTimeout(() => window.location.href = 'index.html', 1000);
         }
 
-        // --- LÓGICA DO CLIENTE ---
+        // Sistema de Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 
+                        type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            
+            toast.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ========== LÓGICA DO CLIENTE ==========
         async function carregarProdutosLoja() {
             try {
                 const res = await fetch(`${API_URL}/products`);
-                const produtos = await res.json();
-                const grid = document.getElementById('products-grid');
-                
-                grid.innerHTML = produtos.map(p => `
-                    <div class="card">
-                        <img src="${p.image_url || 'https://via.placeholder.com/300'}" alt="${p.name}">
-                        <div class="card-body">
-                            <div class="card-title">${p.name}</div>
-                            <div class="card-price">R$ ${p.price}</div>
-                            <button onclick="adicionarAoCarrinho('${p.name}', ${p.price})">
-                                Adicionar à Cesta ➕
+                todosProdutos = await res.json();
+                renderizarProdutos(todosProdutos);
+            } catch (e) {
+                showToast('Erro ao carregar produtos', 'error');
+            }
+        }
+
+        function renderizarProdutos(produtos) {
+            const grid = document.getElementById('products-grid');
+            if (produtos.length === 0) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; padding: 40px;">Nenhum produto encontrado.</p>';
+                return;
+            }
+            
+            grid.innerHTML = produtos.map(p => `
+                <div class="product-card">
+                    <img src="${p.image_url || 'https://via.placeholder.com/300'}" alt="${p.name}" class="product-image">
+                    ${p.quantity < 10 ? '<span class="product-badge">Últimas unidades!</span>' : ''}
+                    <div class="product-body">
+                        <div class="product-title">${p.name}</div>
+                        <div class="product-price">R$ ${parseFloat(p.price).toFixed(2)}</div>
+                        <div class="product-actions">
+                            <button class="btn-add-cart" onclick='adicionarAoCarrinho(${JSON.stringify(p)})'>
+                                <i class="fas fa-cart-plus"></i> Adicionar
+                            </button>
+                            <button class="btn-favorite" onclick="toggleFavorite('${p.id}')">
+                                <i class="far fa-heart"></i>
                             </button>
                         </div>
                     </div>
-                `).join('');
-            } catch (e) { console.error("Erro ao carregar produtos"); }
+                </div>
+            `).join('');
         }
 
-        function adicionarAoCarrinho(nome, preco) {
-            carrinho.push({ nome, preco });
+        function filtrarProdutos() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const filterValue = document.getElementById('filter-select').value;
+            
+            let produtosFiltrados = todosProdutos.filter(p => {
+                const matchSearch = p.name.toLowerCase().includes(searchTerm);
+                const matchFilter = filterValue === 'all' || p.name.toLowerCase().includes(filterValue);
+                return matchSearch && matchFilter;
+            });
+            
+            renderizarProdutos(produtosFiltrados);
+        }
+
+        function toggleFavorite(id) {
+            const btn = event.target.closest('.btn-favorite');
+            btn.classList.toggle('active');
+            const icon = btn.querySelector('i');
+            icon.classList.toggle('far');
+            icon.classList.toggle('fas');
+        }
+
+        function adicionarAoCarrinho(produto) {
+            carrinho.push({
+                id: produto.id,
+                nome: produto.name,
+                preco: parseFloat(produto.price),
+                imagem: produto.image_url
+            });
+            localStorage.setItem('carrinho', JSON.stringify(carrinho));
             atualizarCarrinhoUI();
-            alert(`${nome} adicionado!`);
+            showToast(`${produto.name} adicionado ao carrinho!`, 'success');
         }
 
         function atualizarCarrinhoUI() {
             const float = document.getElementById('cart-float');
             const count = document.getElementById('cart-count');
             count.innerText = carrinho.length;
-            if (carrinho.length > 0) float.style.display = 'block';
+            float.style.display = carrinho.length > 0 ? 'flex' : 'none';
+        }
+
+        function showCartModal() {
+            const modal = document.getElementById('cart-modal');
+            const itemsContainer = document.getElementById('cart-items');
+            
+            if (carrinho.length === 0) {
+                itemsContainer.innerHTML = '<p style="text-align: center; padding: 40px; color: var(--light-gray);">Seu carrinho está vazio</p>';
+            } else {
+                itemsContainer.innerHTML = carrinho.map((item, index) => `
+                    <div style="display: flex; gap: 15px; padding: 15px; border-bottom: 1px solid var(--light); align-items: center;">
+                        <img src="${item.imagem || 'https://via.placeholder.com/80'}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600;">${item.nome}</div>
+                            <div style="color: var(--accent); font-weight: 700;">R$ ${item.preco.toFixed(2)}</div>
+                        </div>
+                        <button onclick="removerDoCarrinho(${index})" style="background: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+            
+            const total = carrinho.reduce((acc, item) => acc + item.preco, 0);
+            document.getElementById('cart-total').innerText = `R$ ${total.toFixed(2)}`;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function removerDoCarrinho(index) {
+            carrinho.splice(index, 1);
+            localStorage.setItem('carrinho', JSON.stringify(carrinho));
+            atualizarCarrinhoUI();
+            showCartModal(); // Atualiza o modal
+            showToast('Item removido do carrinho', 'info');
         }
 
         async function finalizarCompra() {
             if (carrinho.length === 0) return;
             
             const total = carrinho.reduce((acc, item) => acc + item.preco, 0);
-            const confirmar = confirm(`Total: R$ ${total.toFixed(2)}\nDeseja confirmar a compra?`);
-
-            if (confirmar) {
-                await fetch(`${API_URL}/checkout`, {
+            
+            try {
+                const response = await fetch(`${API_URL}/checkout`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -127,44 +415,246 @@
                         items: carrinho
                     })
                 });
-                alert('Compra realizada com sucesso! 🎉');
-                carrinho = [];
-                location.reload();
+                
+                if (response.ok) {
+                    showToast('Compra realizada com sucesso! 🎉', 'success');
+                    carrinho = [];
+                    localStorage.setItem('carrinho', JSON.stringify(carrinho));
+                    atualizarCarrinhoUI();
+                    closeCartModal();
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showToast('Erro ao processar compra', 'error');
+                }
+            } catch (e) {
+                showToast('Erro ao conectar com o servidor', 'error');
             }
         }
 
-        // --- LÓGICA DO ADMIN ---
-        async function carregarPedidosAdmin() {
-            const res = await fetch(`${API_URL}/orders`);
-            const pedidos = await res.json();
-            const tbody = document.querySelector('#orders-table tbody');
+        async function carregarMeusPedidos() {
+            try {
+                const res = await fetch(`${API_URL}/orders`);
+                const pedidos = await res.json();
+                const meusPedidos = pedidos.filter(p => p.user_email === userEmail);
+                
+                const tbody = document.querySelector('#my-orders-table tbody');
+                
+                if (meusPedidos.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;">Você ainda não fez nenhum pedido.</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = meusPedidos.map(pedido => {
+                    const listaItens = pedido.items.map(i => i.nome).join(', ');
+                    const statusClass = pedido.status === 'Pendente' ? 'status-pendente' : 'status-enviado';
+                    
+                    return `
+                        <tr>
+                            <td>${new Date(pedido.created_at).toLocaleDateString('pt-BR')}</td>
+                            <td style="font-size:0.9em;">${listaItens}</td>
+                            <td style="font-weight: 700; color: var(--accent);">R$ ${parseFloat(pedido.total_price).toFixed(2)}</td>
+                            <td><span class="status-badge ${statusClass}">${pedido.status}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (e) {
+                showToast('Erro ao carregar pedidos', 'error');
+            }
+        }
 
+        // ========== LÓGICA DO ADMIN ==========
+        async function carregarDashboardAdmin() {
+            await carregarEstatisticas();
+            await carregarProdutosAdmin();
+            await carregarPedidosAdmin();
+        }
+
+        async function carregarEstatisticas() {
+            try {
+                const [ordersRes, productsRes] = await Promise.all([
+                    fetch(`${API_URL}/orders`),
+                    fetch(`${API_URL}/products`)
+                ]);
+                
+                const orders = await ordersRes.json();
+                const products = await productsRes.json();
+                
+                const totalRevenue = orders.reduce((acc, order) => acc + parseFloat(order.total_price), 0);
+                
+                document.getElementById('stat-orders').innerText = orders.length;
+                document.getElementById('stat-revenue').innerText = `R$ ${totalRevenue.toFixed(2)}`;
+                document.getElementById('stat-products').innerText = products.length;
+            } catch (e) {
+                showToast('Erro ao carregar estatísticas', 'error');
+            }
+        }
+
+        async function carregarProdutosAdmin() {
+            try {
+                const res = await fetch(`${API_URL}/products`);
+                const produtos = await res.json();
+                todosProdutos = produtos;
+                
+                const tbody = document.querySelector('#products-admin-table tbody');
+                tbody.innerHTML = produtos.map(p => `
+                    <tr>
+                        <td><img src="${p.image_url || 'https://via.placeholder.com/50'}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;"></td>
+                        <td>${p.name}</td>
+                        <td style="font-weight: 700; color: var(--accent);">R$ ${parseFloat(p.price).toFixed(2)}</td>
+                        <td>${p.quantity}</td>
+                        <td>
+                            <button class="btn-action" onclick='editProduct(${JSON.stringify(p)})' style="background: var(--warning); margin-right: 5px;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-action" onclick="deleteProduct('${p.id}')" style="background: var(--danger);">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                showToast('Erro ao carregar produtos', 'error');
+            }
+        }
+
+        async function carregarPedidosAdmin() {
+            try {
+                const res = await fetch(`${API_URL}/orders`);
+                todosPedidos = await res.json();
+                renderizarPedidos(todosPedidos);
+            } catch (e) {
+                showToast('Erro ao carregar pedidos', 'error');
+            }
+        }
+
+        function renderizarPedidos(pedidos) {
+            const tbody = document.querySelector('#orders-table tbody');
             tbody.innerHTML = pedidos.map(pedido => {
-                // Formata os itens para exibir bonito
                 const listaItens = pedido.items.map(i => i.nome).join(', ');
-                const classeStatus = pedido.status === 'Pendente' ? 'status-pendente' : 'status-enviado';
+                const statusClass = pedido.status === 'Pendente' ? 'status-pendente' : 'status-enviado';
                 const botaoAcao = pedido.status === 'Pendente' 
-                    ? `<button onclick="enviarPedido('${pedido.id}')" style="background:#3498db; width:auto; padding:5px 10px;">Despachar 🚚</button>` 
-                    : '✅ Concluído';
+                    ? `<button class="btn-action" onclick="enviarPedido('${pedido.id}')"><i class="fas fa-truck"></i> Despachar</button>` 
+                    : '<span style="color: var(--success);"><i class="fas fa-check-circle"></i> Concluído</span>';
 
                 return `
                     <tr>
-                        <td>${new Date(pedido.created_at).toLocaleDateString()}</td>
+                        <td>${new Date(pedido.created_at).toLocaleDateString('pt-BR')}</td>
                         <td>${pedido.user_email}</td>
-                        <td style="font-size:0.9em; color:#555;">${listaItens}</td>
-                        <td>R$ ${pedido.total_price}</td>
-                        <td class="${classeStatus}">${pedido.status}</td>
+                        <td style="font-size:0.9em;">${listaItens}</td>
+                        <td style="font-weight: 700; color: var(--accent);">R$ ${parseFloat(pedido.total_price).toFixed(2)}</td>
+                        <td><span class="status-badge ${statusClass}">${pedido.status}</span></td>
                         <td>${botaoAcao}</td>
                     </tr>
                 `;
             }).join('');
         }
 
+        function filtrarPedidos() {
+            const searchTerm = document.getElementById('order-search').value.toLowerCase();
+            const filterValue = document.getElementById('order-filter').value;
+            
+            let pedidosFiltrados = todosPedidos.filter(p => {
+                const matchSearch = p.user_email.toLowerCase().includes(searchTerm);
+                const matchFilter = filterValue === 'all' || p.status === filterValue;
+                return matchSearch && matchFilter;
+            });
+            
+            renderizarPedidos(pedidosFiltrados);
+        }
+
         async function enviarPedido(id) {
-            if(confirm('Marcar este pedido como Enviado?')) {
+            try {
                 await fetch(`${API_URL}/orders/${id}`, { method: 'PUT' });
-                carregarPedidosAdmin(); // Recarrega a tabela
+                showToast('Pedido marcado como enviado!', 'success');
+                carregarPedidosAdmin();
+            } catch (e) {
+                showToast('Erro ao atualizar pedido', 'error');
             }
+        }
+
+        // Gerenciamento de Produtos
+        function showAddProductModal() {
+            document.getElementById('product-modal-title').innerText = 'Adicionar Produto';
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            document.getElementById('product-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function editProduct(produto) {
+            document.getElementById('product-modal-title').innerText = 'Editar Produto';
+            document.getElementById('product-id').value = produto.id;
+            document.getElementById('product-name').value = produto.name;
+            document.getElementById('product-price').value = produto.price;
+            document.getElementById('product-quantity').value = produto.quantity;
+            document.getElementById('product-image').value = produto.image_url;
+            document.getElementById('product-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function saveProduct(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('product-id').value;
+            const produto = {
+                name: document.getElementById('product-name').value,
+                price: parseFloat(document.getElementById('product-price').value),
+                quantity: parseInt(document.getElementById('product-quantity').value),
+                image_url: document.getElementById('product-image').value
+            };
+            
+            try {
+                const method = id ? 'PUT' : 'POST';
+                const url = id ? `${API_URL}/products/${id}` : `${API_URL}/products`;
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(produto)
+                });
+                
+                if (response.ok) {
+                    showToast(`Produto ${id ? 'atualizado' : 'adicionado'} com sucesso!`, 'success');
+                    closeProductModal();
+                    carregarProdutosAdmin();
+                    carregarEstatisticas();
+                } else {
+                    showToast('Erro ao salvar produto', 'error');
+                }
+            } catch (e) {
+                showToast('Erro ao conectar com o servidor', 'error');
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}/products/${id}`, { method: 'DELETE' });
+                
+                if (response.ok) {
+                    showToast('Produto excluído com sucesso!', 'success');
+                    carregarProdutosAdmin();
+                    carregarEstatisticas();
+                } else {
+                    showToast('Erro ao excluir produto', 'error');
+                }
+            } catch (e) {
+                showToast('Erro ao conectar com o servidor', 'error');
+            }
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const cartModal = document.getElementById('cart-modal');
+            const productModal = document.getElementById('product-modal');
+            if (event.target === cartModal) closeCartModal();
+            if (event.target === productModal) closeProductModal();
         }
     </script>
 </body>

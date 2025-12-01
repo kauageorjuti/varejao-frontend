@@ -3,70 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acesso - Varejão</title>
+    <title>Varejão Online - Frutas e Verduras Frescas</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Estilos extras só para o login/cadastro */
-        .switch-btn {
-            background: none;
-            border: none;
-            color: #28a745;
-            cursor: pointer;
-            text-decoration: underline;
-            font-size: 0.9em;
-            margin-top: 10px;
-        }
-        .hidden {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <div class="container" style="max-width: 400px; text-align: center;">
-        <h2>Varejão On-line 🍎</h2>
+<body class="landing-page">
+    <!-- Landing Page -->
+    <div id="landing-section">
+        <nav class="landing-nav">
+            <div class="nav-brand">
+                <i class="fas fa-shopping-basket"></i>
+                <span>Varejão <span class="accent">Online</span></span>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-outline" onclick="showLogin()">Entrar</button>
+                <button class="btn-primary" onclick="showRegister()">Cadastrar</button>
+            </div>
+        </nav>
 
-        <div id="login-box">
-            <h3>Entrar</h3>
-            <input type="email" id="login-email" placeholder="Seu E-mail">
-            <input type="password" id="login-pass" placeholder="Sua Senha">
-            <button onclick="fazerLogin()">Acessar Sistema</button>
-            
-            <p>Não tem conta? <button class="switch-btn" onclick="toggleForms()">Cadastre-se aqui</button></p>
-        </div>
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Frutas e Verduras <span class="gradient-text">Fresquinhas</span> na Sua Casa
+                </h1>
+                <p class="hero-subtitle">
+                    Qualidade, frescor e economia em um só lugar. Faça seu pedido online e receba no conforto da sua casa!
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn-large btn-primary" onclick="showRegister()">
+                        <i class="fas fa-rocket"></i> Começar Agora
+                    </button>
+                    <button class="btn-large btn-outline" onclick="showLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Já Tenho Conta
+                    </button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="floating-card">
+                    <i class="fas fa-leaf"></i>
+                    <h3>100% Frescos</h3>
+                    <p>Produtos selecionados diariamente</p>
+                </div>
+                <div class="floating-card delay-1">
+                    <i class="fas fa-truck"></i>
+                    <h3>Entrega Rápida</h3>
+                    <p>Receba em até 24 horas</p>
+                </div>
+                <div class="floating-card delay-2">
+                    <i class="fas fa-tag"></i>
+                    <h3>Preços Justos</h3>
+                    <p>Economia garantida</p>
+                </div>
+            </div>
+        </section>
 
-        <div id="register-box" class="hidden">
-            <h3>Criar Nova Conta</h3>
-            <input type="text" id="reg-name" placeholder="Seu Nome Completo">
-            <input type="email" id="reg-email" placeholder="Seu E-mail">
-            <input type="password" id="reg-pass" placeholder="Crie uma Senha">
-            <button onclick="fazerCadastro()">Cadastrar</button>
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">Por que escolher o Varejão Online?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-apple-alt"></i>
+                        </div>
+                        <h3>Produtos Frescos</h3>
+                        <p>Selecionamos os melhores produtos todos os dias para garantir qualidade e frescor.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Economia de Tempo</h3>
+                        <p>Faça suas compras em minutos, sem sair de casa. Simples, rápido e prático.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Compra Segura</h3>
+                        <p>Seus dados estão protegidos e suas compras são garantidas.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h3>Suporte Dedicado</h3>
+                        <p>Nossa equipe está sempre pronta para ajudar você.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 
-            <p>Já tem conta? <button class="switch-btn" onclick="toggleForms()">Fazer Login</button></p>
+    <!-- Modal de Login -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModals()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <i class="fas fa-sign-in-alt modal-icon"></i>
+                <h2>Bem-vindo de Volta!</h2>
+                <p>Entre com suas credenciais para acessar sua conta</p>
+            </div>
+            <form id="login-form" onsubmit="fazerLogin(event)">
+                <div class="form-group">
+                    <label for="login-email">
+                        <i class="fas fa-envelope"></i> E-mail
+                    </label>
+                    <input type="email" id="login-email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-pass">
+                        <i class="fas fa-lock"></i> Senha
+                    </label>
+                    <input type="password" id="login-pass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </form>
+            <div class="modal-footer">
+                <p>Não tem uma conta? <a href="#" onclick="switchToRegister()">Cadastre-se aqui</a></p>
+            </div>
         </div>
     </div>
 
-    <script>
-        // Define a URL da API (use a do Render quando subir, ou localhost para teste)
-        const API_URL = 'https://varejao-backend-shpn.onrender.com'; 
+    <!-- Modal de Cadastro -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModals()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <i class="fas fa-user-plus modal-icon"></i>
+                <h2>Criar Nova Conta</h2>
+                <p>Preencha os dados abaixo para começar</p>
+            </div>
+            <form id="register-form" onsubmit="fazerCadastro(event)">
+                <div class="form-group">
+                    <label for="reg-name">
+                        <i class="fas fa-user"></i> Nome Completo
+                    </label>
+                    <input type="text" id="reg-name" placeholder="João Silva" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">
+                        <i class="fas fa-envelope"></i> E-mail
+                    </label>
+                    <input type="email" id="reg-email" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-pass">
+                        <i class="fas fa-lock"></i> Senha
+                    </label>
+                    <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" required minlength="6">
+                    <small class="form-hint">A senha deve ter pelo menos 6 caracteres</small>
+                </div>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-rocket"></i> Criar Conta
+                </button>
+            </form>
+            <div class="modal-footer">
+                <p>Já tem uma conta? <a href="#" onclick="switchToLogin()">Faça login</a></p>
+            </div>
+        </div>
+    </div>
 
-        // Função para trocar entre Login e Cadastro
-        function toggleForms() {
-            const loginBox = document.getElementById('login-box');
-            const regBox = document.getElementById('register-box');
-            
-            if (loginBox.style.display === 'none') {
-                loginBox.style.display = 'block';
-                regBox.style.display = 'none';
-            } else {
-                loginBox.style.display = 'none';
-                regBox.style.display = 'block';
-            }
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+    <script>
+        const API_URL = 'https://varejao-backend-shpn.onrender.com';
+
+        // Gerenciamento de Modais
+        function showLogin() {
+            document.getElementById('login-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
-        // Função de Login (Já existia)
-        async function fazerLogin() {
+        function showRegister() {
+            document.getElementById('register-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModals() {
+            document.getElementById('login-modal').classList.remove('active');
+            document.getElementById('register-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function switchToRegister() {
+            closeModals();
+            setTimeout(showRegister, 300);
+        }
+
+        function switchToLogin() {
+            closeModals();
+            setTimeout(showLogin, 300);
+        }
+
+        // Sistema de Toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icon = type === 'success' ? 'fa-check-circle' : 
+                        type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            
+            toast.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Login
+        async function fazerLogin(event) {
+            event.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-pass').value;
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
 
             try {
                 const response = await fetch(`${API_URL}/login`, {
@@ -78,26 +246,32 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    // Salva o nome do usuário para usar depois se quiser
                     localStorage.setItem('usuario', data.user.name);
-                    window.location.href = 'dashboard.html';
+                    localStorage.setItem('userEmail', data.user.email);
+                    showToast('Login realizado com sucesso!', 'success');
+                    setTimeout(() => window.location.href = 'dashboard.html', 1000);
                 } else {
-                    alert(data.message);
+                    showToast(data.message || 'E-mail ou senha incorretos', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
                 }
             } catch (error) {
-                alert('Erro ao conectar com o servidor.');
+                showToast('Erro ao conectar com o servidor', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
             }
         }
 
-        // Função de Cadastro (Nova!)
-        async function fazerCadastro() {
+        // Cadastro
+        async function fazerCadastro(event) {
+            event.preventDefault();
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-pass').value;
+            const submitBtn = event.target.querySelector('button[type="submit"]');
 
-            if (!name || !email || !password) {
-                return alert('Preencha todos os campos!');
-            }
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando conta...';
 
             try {
                 const response = await fetch(`${API_URL}/register`, {
@@ -109,14 +283,26 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Conta criada com sucesso! Agora faça login.');
-                    toggleForms(); // Volta para a tela de login
+                    showToast('Conta criada com sucesso! Faça login para continuar.', 'success');
+                    setTimeout(() => switchToLogin(), 1500);
                 } else {
-                    alert(data.message || 'Erro ao cadastrar.');
+                    showToast(data.message || 'Erro ao criar conta', 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Criar Conta';
                 }
             } catch (error) {
-                alert('Erro ao conectar com o servidor.');
-                console.error(error);
+                showToast('Erro ao conectar com o servidor', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-rocket"></i> Criar Conta';
+            }
+        }
+
+        // Fechar modal ao clicar fora
+        window.onclick = function(event) {
+            const loginModal = document.getElementById('login-modal');
+            const registerModal = document.getElementById('register-modal');
+            if (event.target === loginModal || event.target === registerModal) {
+                closeModals();
             }
         }
     </script>
